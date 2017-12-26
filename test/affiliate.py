@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 #
 # group affiliate tests
 #
-# includes minimal history 
+# includes minimal history
 #
 
 

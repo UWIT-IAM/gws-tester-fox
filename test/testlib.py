@@ -121,7 +121,6 @@ def verify_group(conf_group, conf_aff=None):
                 if aff['name'] == conf_aff['name']:
                     print('verify ' + aff['name'])
                     _verify_senders(aff, conf_aff)
-            
 
     except json.decoder.JSONDecodeError:
         print('invalid json in gws group response')
@@ -227,6 +226,7 @@ def _verify_senders(data, conf_aff):
                 match = 1
         assert match >= 0
 
+
 def verify_affiliate(conf_group, conf_aff):
     url = conf.GWS_BASE + '/group/' + conf_group['id'] + '/affiliate/' + conf_aff['name']
     print('verify GET: ' + url)
@@ -322,4 +322,3 @@ def search_groups(stem=None, name=None, scope=None):
         status = 599
 
     return (status, data)
-
