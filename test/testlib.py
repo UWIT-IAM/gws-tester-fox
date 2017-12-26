@@ -31,7 +31,7 @@ def build_group(conf_group):
     pgroup = {}
     pgroup['data'] = group
     data = json.dumps(pgroup)
-    print('json: ' + data)
+    # print('json: ' + data)
 
     _get_pool_manager()
     resp = http.request('PUT', url, headers=put_headers, body=data)
@@ -77,7 +77,7 @@ def group_status(conf_group):
     return ret
 
 
-def verify_group(conf_group):
+def verify_group(conf_group, conf_aff=None):
     url = conf.GWS_BASE + '/group/' + conf_group['id']
     print('GET: ' + url)
     _get_pool_manager()
@@ -115,6 +115,13 @@ def verify_group(conf_group):
         _verify_admin(conf_group, data, 'readers')
         _verify_admin(conf_group, data, 'optins')
         _verify_admin(conf_group, data, 'optouts')
+
+        if conf_aff is not None:
+            for aff in data['affiliates']:
+                if aff['name'] == conf_aff['name']:
+                    print('verify ' + aff['name'])
+                    _verify_senders(aff, conf_aff)
+            
 
     except json.decoder.JSONDecodeError:
         print('invalid json in gws group response')
@@ -191,3 +198,128 @@ def verify_members(conf_group, conf_members):
         return 599
 
     return 200
+
+
+def put_affiliate(conf_group, conf_aff):
+
+    url = conf.GWS_BASE + '/group/' + conf_group['id'] + '/affiliate/' + conf_aff['name'] + \
+                          '?status=' + conf_aff['status'] + '&sender=' + ','.join(conf_aff['senders'])
+    print('PUT: ' + url)
+
+    _get_pool_manager()
+    resp = http.request('PUT', url, headers=put_headers, body=None)
+
+    print(resp.status)
+    # print(resp.data)
+    if resp.status != 200 and resp.status != 201:
+        print('put of affiliate failed')
+    return resp.status
+
+
+def _verify_senders(data, conf_aff):
+    for sndr in data['senders']:
+        print(sndr)
+        if sndr['type'] == 'set' and sndr['id'] == 'all':
+            sndr['id'] = 'dc=all'
+        match = -1
+        for csndr in conf_aff['senders']:
+            if sndr['id'] == csndr:
+                match = 1
+        assert match >= 0
+
+def verify_affiliate(conf_group, conf_aff):
+    url = conf.GWS_BASE + '/group/' + conf_group['id'] + '/affiliate/' + conf_aff['name']
+    print('verify GET: ' + url)
+    _get_pool_manager()
+    try:
+        resp = http.request('GET', url, headers=get_headers)
+        print(resp.status)
+        print(resp.data)
+        aff_res = json.loads(resp.data.decode("utf-8"))
+
+        # meta stuff
+        assert aff_res['schemas'][0] == conf.SCHEMAS['affiliate']
+        meta = aff_res['meta']
+        assert meta['resourceType'] == 'affiliate'
+        assert meta['selfRef'] == url
+
+        data = aff_res['data']
+        assert(data['name']) == conf_aff['name']
+        assert(data['status']) == conf_aff['status']
+        _verify_senders(data, conf_aff)
+
+    except json.decoder.JSONDecodeError:
+        print('invalid json in get affiliate response')
+        print(resp.data)
+        return 599
+
+    return 200
+
+
+def verify_history(conf_group, min_items=1):
+    url = conf.GWS_BASE + '/group/' + conf_group['id'] + '/history/'
+    print('GET: ' + url)
+    _get_pool_manager()
+    try:
+        resp = http.request('GET', url, headers=get_headers)
+        print(resp.status)
+        # print(resp.data)
+
+        group = json.loads(resp.data.decode("utf-8"))
+
+        # meta stuff
+        assert group['schemas'][0] == conf.SCHEMAS['history']
+        meta = group['meta']
+        assert meta['resourceType'] == 'history'
+        assert meta['selfRef'] == url
+
+        data = group['data']
+
+        assert len(data) > min_items
+
+    except json.decoder.JSONDecodeError:
+        print('invalid json in get affiliate response')
+        print(resp.data)
+        return 599
+
+    return 200
+
+
+def search_groups(stem=None, name=None, scope=None):
+    url = conf.GWS_BASE + '/search'
+    sep = '?'
+    if name is not None:
+        url = url + sep + 'name=' + name
+        sep = '&'
+    if stem is not None:
+        url = url + sep + 'stem=' + stem
+        sep = '&'
+    if scope is not None:
+        url = url + sep + 'scope=' + scope
+        sep = '&'
+    print('GET: ' + url)
+    _get_pool_manager()
+    data = None
+    status = 200
+    try:
+        resp = http.request('GET', url, headers=get_headers)
+        print(resp.status)
+        status = resp.status
+        # print(resp.data)
+
+        content = json.loads(resp.data.decode("utf-8"))
+
+        # meta stuff
+        assert content['schemas'][0] == conf.SCHEMAS['search']
+        meta = content['meta']
+        assert meta['resourceType'] == 'search'
+        # assert meta['selfRef'] == url
+        data = content['data']
+
+    except json.decoder.JSONDecodeError:
+        print('invalid json in get affiliate response')
+        print(resp.data)
+        status = 599
+
+    return (status, data)
+

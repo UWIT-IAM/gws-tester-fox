@@ -1,5 +1,5 @@
 # Group Web Service 2.2 tester
-These are tests I run during development of Groups 2.2, with Json representations.
+These are some Json representation tests I run during development of Groups 2.2.
 
 ## Settings and groups setup
 * Copy settings.tmpl to settings.py and edit that for your local configuration.

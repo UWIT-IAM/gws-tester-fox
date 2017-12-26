@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class Group_Test():
 
-    def __init__(self):
+    def test_00_init(self):
         resp = delete_group(conf.testgroup1)
         assert resp == 200 or resp == 404
 
