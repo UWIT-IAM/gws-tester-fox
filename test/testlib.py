@@ -174,6 +174,7 @@ def set_membership(conf_group, members):
 
 
 def verify_members(conf_group, conf_members):
+    time.sleep(5)  # seems to fail if we don't put in a slight delay
     url = conf.GWS_BASE + '/group/' + conf_group['id'] + '/member/'
     print('verify GET: ' + url)
     _get_pool_manager()
@@ -286,6 +287,7 @@ def verify_history(conf_group, min_items=1):
 
 
 def search_groups(stem=None, name=None, scope=None):
+    time.sleep(5) # need delay or fails
     url = conf.GWS_BASE + '/search'
     sep = '?'
     if name is not None:
