@@ -3,6 +3,8 @@ These are some Json representation tests I run during development of Groups 2.2.
 
 ## Settings and groups setup
 * Copy settings.tmpl to settings.py and edit that for your local configuration.
+* In settings.py you must add your own netid and DNS name to the group templates (the DNS name for the cert
+  you run the tests as).
 * You must create the base group, as identified in your settings.py, and permit your certificate to be a subgroup creator.  Call it "u\_yourid_test".
 * You must identify your client and ca certs.
 * The membership tests use real ids.
