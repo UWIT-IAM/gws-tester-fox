@@ -89,7 +89,7 @@ def verify_group(conf_group, conf_aff=None):
         group = json.loads(resp.data.decode("utf-8"))
 
         # meta stuff
-        assert group['schemas'][0] == conf.SCHEMAS['group']
+        assert group['schemas'][0] == conf.SCHEMA
         meta = group['meta']
         assert meta['resourceType'] == 'group'
         assert meta['selfRef'] == url
@@ -238,7 +238,7 @@ def verify_affiliate(conf_group, conf_aff):
         aff_res = json.loads(resp.data.decode("utf-8"))
 
         # meta stuff
-        assert aff_res['schemas'][0] == conf.SCHEMAS['affiliate']
+        assert aff_res['schemas'][0] == conf.SCHEMA
         meta = aff_res['meta']
         assert meta['resourceType'] == 'affiliate'
         assert meta['selfRef'] == url
@@ -268,7 +268,7 @@ def verify_history(conf_group, min_items=1):
         group = json.loads(resp.data.decode("utf-8"))
 
         # meta stuff
-        assert group['schemas'][0] == conf.SCHEMAS['history']
+        assert group['schemas'][0] == conf.SCHEMA
         meta = group['meta']
         assert meta['resourceType'] == 'history'
         assert meta['selfRef'] == url
@@ -285,9 +285,12 @@ def verify_history(conf_group, min_items=1):
     return 200
 
 
-def search_groups(stem=None, name=None, scope=None):
+def search_groups(member=None, stem=None, name=None, scope=None, type=None):
     url = conf.GWS_BASE + '/search'
     sep = '?'
+    if member is not None:
+        url = url + sep + 'member=' + member
+        sep = '&'
     if name is not None:
         url = url + sep + 'name=' + name
         sep = '&'
@@ -297,6 +300,10 @@ def search_groups(stem=None, name=None, scope=None):
     if scope is not None:
         url = url + sep + 'scope=' + scope
         sep = '&'
+    if type is not None:
+        url = url + sep + 'type=' + type
+        sep = '&'
+
     print('GET: ' + url)
     _get_pool_manager()
     data = None
@@ -310,7 +317,7 @@ def search_groups(stem=None, name=None, scope=None):
         content = json.loads(resp.data.decode("utf-8"))
 
         # meta stuff
-        assert content['schemas'][0] == conf.SCHEMAS['search']
+        assert content['schemas'][0] == conf.SCHEMA
         meta = content['meta']
         assert meta['resourceType'] == 'search'
         # assert meta['selfRef'] == url
