@@ -183,6 +183,13 @@ def verify_members(conf_group, conf_members):
         print(resp.data)
         member_res = json.loads(resp.data.decode("utf-8"))
 
+        # meta stuff
+        assert member_res['schemas'][0] == conf.SCHEMA
+        meta = member_res['meta']
+        assert meta['resourceType'] == 'members'
+        assert meta['id'] == conf_group['id']
+        assert meta['selfRef'] == url
+
         for gmbr in member_res['data']:
             print(gmbr)
             match = -1
@@ -190,6 +197,36 @@ def verify_members(conf_group, conf_members):
                 if gmbr['type'] == cmbr['type'] and gmbr['id'] == cmbr['id']:
                     match = 1
             assert match >= 0
+
+    except json.decoder.JSONDecodeError:
+        print('invalid json in gws member response')
+        print(resp.data)
+        return 599
+
+    return 200
+
+
+def _verify_member(conf_group, conf_member):
+    url = conf.GWS_BASE + '/group/' + conf_group['id'] + '/member/' + conf_member
+    print('verify GET: ' + url)
+    _get_pool_manager()
+    try:
+        resp = http.request('GET', url, headers=get_headers)
+        print(resp.status)
+        print(resp.data)
+        member_res = json.loads(resp.data.decode("utf-8"))
+
+        # meta stuff
+        assert member_res['schemas'][0] == conf.SCHEMA
+        meta = member_res['meta']
+        assert meta['resourceType'] == 'member'
+        assert meta['id'] == conf_group['id']
+        assert meta['member'] == conf_member
+        assert meta['selfRef'] == url
+
+        data = member_res['meta']
+        # assert data['type'] == '?'
+        assert data['id'] == conf_member
 
     except json.decoder.JSONDecodeError:
         print('invalid json in gws member response')

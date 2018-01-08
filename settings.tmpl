@@ -4,18 +4,13 @@ HOST = 'iam-ws.u.washington.edu'
 #HOST = 'iam21.s.uw.edu'
 CERT_FILE = '/some_path/some_file.crt'
 KEY_FILE = '/some_path/some_file.key'
-CA_FILE = '/some_path/some_file = True
+CA_FILE = '/some_path/some_file'
+VERIFY_HOST = True
 
 GWS_BASE = 'https://' + HOST + '/group_sws/v3'
-GROUP_BASE = 'u_fox_jsontests'
+GROUP_BASE = 'u_<your-id>_jsontests'
 
-SCHEMAS = {
- 'group': 'urn:mace:washington.edu:schemas:groups:1.0:group',
- 'member': 'urn:mace:washington.edu:schemas:groups:1.0:member',
- 'affiliate': 'urn:mace:washington.edu:schemas:groups:1.0:affiliate',
- 'history': 'urn:mace:washington.edu:schemas:groups:1.0:history',
- 'search': 'urn:mace:washington.edu:schemas:groups:1.0:search'
-}
+SCHEMA = 'urn:mace:washington.edu:schemas:groups:1.0'
 
 # test group 1 definition
 
