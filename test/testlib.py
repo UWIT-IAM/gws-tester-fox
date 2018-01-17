@@ -26,7 +26,7 @@ def _get_pool_manager():
 def build_group(conf_group):
 
     group = deepcopy(conf_group)
-    url = conf.GWS_BASE + '/group/' + group['id']
+    url = conf.GWS_BASE + '/group/' + group['id'] + '?synchronized'
     print('PUT: ' + url)
     pgroup = {}
     pgroup['data'] = group
@@ -173,8 +173,10 @@ def set_membership(conf_group, members):
     return resp.status
 
 
-def verify_members(conf_group, conf_members):
+def verify_members(conf_group, conf_members, registry=False):
     url = conf.GWS_BASE + '/group/' + conf_group['id'] + '/member/'
+    if registry:
+        url = url + '?source=registry'
     print('verify GET: ' + url)
     _get_pool_manager()
     try:
@@ -188,7 +190,7 @@ def verify_members(conf_group, conf_members):
         meta = member_res['meta']
         assert meta['resourceType'] == 'members'
         assert meta['id'] == conf_group['id']
-        assert meta['selfRef'] == url
+        # assert meta['selfRef'] == url
 
         for gmbr in member_res['data']:
             print(gmbr)
@@ -222,7 +224,7 @@ def _verify_member(conf_group, conf_member):
         assert meta['resourceType'] == 'member'
         assert meta['id'] == conf_group['id']
         assert meta['member'] == conf_member
-        assert meta['selfRef'] == url
+        # assert meta['selfRef'] == url
 
         data = member_res['meta']
         # assert data['type'] == '?'
@@ -246,9 +248,11 @@ def put_affiliate(conf_group, conf_aff):
     resp = http.request('PUT', url, headers=put_headers, body=None)
 
     print(resp.status)
-    # print(resp.data)
+    print(resp.data)
     if resp.status != 200 and resp.status != 201:
-        print('put of affiliate failed')
+        res = json.loads(resp.data.decode("utf-8"))
+        assert res['schemas'][0] == conf.SCHEMA
+        meta = res['error']['code'] == resp.status
     return resp.status
 
 

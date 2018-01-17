@@ -54,6 +54,16 @@ class Affiliate_Test():
         resp = verify_group(conf.testgroup2, conf.google_affiliate_2)
         assert resp == 200
 
+    # test set bogus gooogle sender fails 403
+    def test_047_set_bogus_google(self):
+        resp = put_affiliate(conf.testgroup2, conf.google_affiliate_3)
+        assert resp == 403
+
+    # test set email on google fails 403
+    def test_048_set_bogus_email(self):
+        resp = put_affiliate(conf.testgroup2, conf.email_affiliate_1)
+        assert resp == 403
+
     # test clear google
     def test_09_clear_google(self):
         resp = put_affiliate(conf.testgroup2, conf.google_affiliate_9)

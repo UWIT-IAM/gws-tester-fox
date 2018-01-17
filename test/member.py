@@ -31,6 +31,8 @@ class Member_Test():
     def test_02_verify_members(self):
         resp = verify_members(conf.testgroup2, conf.members1)
         assert resp == 200
+        resp = verify_members(conf.testgroup2, conf.members1, True)
+        assert resp == 200
 
     # test set membership
     def test_03_set_membership(self):
@@ -40,6 +42,8 @@ class Member_Test():
     # test verify set members
     def test_04_verify_set_members(self):
         resp = verify_members(conf.testgroup2, conf.members2)
+        assert resp == 200
+        resp = verify_members(conf.testgroup2, conf.members2, True)
         assert resp == 200
 
     # test cleanup
