@@ -23,39 +23,82 @@ class Search_Test():
                 return True
         return False
 
+    # find via in search
+    def _find_via(self, data, id, via):
+        for g in data:
+            if g['id'] == id:
+                if 'via' in g:
+                    for sub in g['via']:
+                        if sub == via:
+                            return True
+        return False
+
     # create first group
     def test_01_create_group(self):
-        resp = build_group(conf.testgroup1)
-        assert resp == 200 or resp == 201 or resp == 412
+        stat = build_group(conf.testgroup1)
+        assert stat == 200 or stat == 201 or stat == 412
 
     # create second group
     def test_02_create_group(self):
-        resp = build_group(conf.testgroup2)
-        assert resp == 200 or resp == 201 or resp == 412
+        stat = build_group(conf.testgroup2)
+        assert stat == 200 or stat == 201 or stat == 412
 
-    # add members
+    # create third group
+    def test_03_create_group(self):
+        stat = build_group(conf.testgroup3)
+        assert stat == 200 or stat == 201 or stat == 412
+
+    # add member=group2 to group1
     def test_04_add_members(self):
-        resp = add_members(conf.testgroup2, conf.members2)
-        assert resp == 200
+        stat, resp = add_members(conf.testgroup1, [
+                {"type": "group", "id": conf.testgroup2['id']}
+            ])
+        assert stat == 200
 
-    # test search
+    # add member=group3, joeuser to group2
+    def test_05_add_members(self):
+        stat, resp = add_members(conf.testgroup2, [
+                {"type": "group", "id": conf.testgroup3['id']},
+                {"type": "uwnetid", "id": "joeuser"}
+            ])
+        assert stat == 200
+
+    # add member=lisas22g to group3
+    def test_06_add_members(self):
+        stat, resp = add_members(conf.testgroup3, [
+                {"type": "uwnetid", "id": "lisas22g"}
+            ])
+        assert stat == 200
+
+    # test stem search
     def test_11_search(self):
-        (resp, data) = search_groups(stem=conf.GROUP_BASE, scope="one")
-        assert resp == 200
+        (stat, data) = search_groups(stem=conf.GROUP_BASE, scope="one")
+        assert stat == 200
         # print (data)
         assert self._find_id(data, conf.GROUP_BASE)
         assert self._find_id(data, conf.testgroup1['id'])
         assert self._find_id(data, conf.testgroup2['id'])
 
-    def test_12_search(self):
-        (resp, data) = search_groups(member=conf.members2[0]['id'])
-        assert resp == 200
-        # print (data)
+    # test member search
+    def test_13_search(self):
+        (stat, data) = search_groups(member="lisas22g", type="direct")
+        assert stat == 200
+        assert self._find_id(data, conf.testgroup3['id'])
+
+    def test_14_search(self):
+        (stat, data) = search_groups(member="lisas22g", type="effective")
+        assert stat == 200
+        assert self._find_id(data, conf.testgroup1['id'])
         assert self._find_id(data, conf.testgroup2['id'])
+        assert self._find_id(data, conf.testgroup3['id'])
+        assert self._find_via(data, conf.testgroup1['id'], conf.testgroup2['id'])
+        assert self._find_via(data, conf.testgroup1['id'], conf.testgroup3['id'])
 
     # cleanup
     def test__99_cleanup(self):
-        resp = delete_group(conf.testgroup1)
-        assert resp == 200
-        resp = delete_group(conf.testgroup2)
-        assert resp == 200
+        stat = delete_group(conf.testgroup3)
+        assert stat == 200
+        stat = delete_group(conf.testgroup2)
+        assert stat == 200
+        stat = delete_group(conf.testgroup1)
+        assert stat == 200

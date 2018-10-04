@@ -6,7 +6,7 @@ import time
 import urllib3
 import settings as conf
 
-put_headers = {"Content-type": "application/json"}
+put_headers = {"Content-type": "application/json", "If-Match": "*"}
 get_headers = {"Accept": "application/json"}
 
 start_time = time.time()
@@ -21,6 +21,20 @@ def _get_pool_manager():
                                    key_file=conf.KEY_FILE,
                                    ca_certs=conf.CA_FILE,
                                    cert_reqs='CERT_REQUIRED')
+
+
+def get_resource(resource):
+    url = conf.GWS_BASE + resource
+    ret = 0
+    _get_pool_manager()
+    try:
+        resp = http.request('GET', url, headers=get_headers)
+        data = json.loads(resp.data.decode("utf-8"))
+        return resp.status, data
+    except json.decoder.JSONDecodeError:
+        print('invalid json in gws resource')
+        print(resp.data)
+    return 599, None
 
 
 def build_group(conf_group):
@@ -77,8 +91,9 @@ def group_status(conf_group):
     return ret
 
 
-def verify_group(conf_group, conf_aff=None):
-    url = conf.GWS_BASE + '/group/' + conf_group['id']
+def verify_group(conf_group, conf_aff=None, altid=None):
+    group_id = conf_group['id'] if altid is None else altid
+    url = conf.GWS_BASE + '/group/' + group_id
     print('GET: ' + url)
     _get_pool_manager()
     try:
@@ -92,17 +107,17 @@ def verify_group(conf_group, conf_aff=None):
         assert group['schemas'][0] == conf.SCHEMA
         meta = group['meta']
         assert meta['resourceType'] == 'group'
-        assert meta['selfRef'] == url
-        assert meta['memberRef'] == url + '/member/'
+        # assert meta['selfRef'] == url
+        # assert meta['memberRef'] == url + '/member/'
 
         data = group['data']
         assert len(data['regid']) == 32
-        assert data['id'] == conf_group['id']
+        assert data['id'] == group_id
         assert data['displayName'] == conf_group['displayName']
         assert data['description'] == conf_group['description']
-        assert int(data['created'])/1000 > start_time
-        assert int(data['lastModified'])/1000 > start_time
-        assert int(data['lastMemberModified']) == 0
+        assert data['created']/1000 > start_time
+        assert data['lastModified']/1000 > start_time
+        assert data['lastMemberModified'] == 0
         assert data['authnFactor'] == conf_group['authnfactor']
         assert data['classification'] == conf_group['classification']
         assert data['dependsOn'] == ''
@@ -129,8 +144,24 @@ def verify_group(conf_group, conf_aff=None):
     return 200
 
 
-def delete_group(conf_group):
-    url = conf.GWS_BASE + '/group/' + conf_group['id']
+def move_group(group_id, newext=None, newstem=None):
+    url = conf.GWS_BASE + '/groupMove/' + group_id
+    if newext is not None:
+        url = url + '?newext=' + newext
+    elif newstem is not None:
+        url = url + '?newstem=' + newstem
+    else:
+        assert False
+    print('Move: ' + url)
+    _get_pool_manager()
+    resp = http.request('PUT', url, headers=put_headers, body=None)
+    print(resp.status)
+    return resp.status
+
+
+def delete_group(conf_group, altid=None):
+    group_id = conf_group['id'] if altid is None else altid
+    url = conf.GWS_BASE + '/group/' + group_id
     print('DEL: ' + url)
     _get_pool_manager()
     resp = http.request('DELETE', url, headers=get_headers)
@@ -152,7 +183,7 @@ def add_members(conf_group, members):
     # print(resp.data)
     if resp.status != 200:
         print('put of members failed')
-    return resp.status
+    return resp.status, json.loads(resp.data.decode("utf-8"))
 
 
 def set_membership(conf_group, members):
@@ -167,10 +198,10 @@ def set_membership(conf_group, members):
     resp = http.request('PUT', url, headers=put_headers, body=data)
 
     print(resp.status)
-    # print(resp.data)
+    print(resp.data)
     if resp.status != 200:
         print('put of members failed')
-    return resp.status
+    return resp.status, json.loads(resp.data.decode("utf-8"))
 
 
 def verify_members(conf_group, conf_members, registry=False):
@@ -252,7 +283,8 @@ def put_affiliate(conf_group, conf_aff):
     if resp.status != 200 and resp.status != 201:
         res = json.loads(resp.data.decode("utf-8"))
         assert res['schemas'][0] == conf.SCHEMA
-        meta = res['error']['code'] == resp.status
+        assert res['errors'][0]['status'] == resp.status
+        assert 'detail' in res['errors'][0]
     return resp.status
 
 
@@ -282,7 +314,7 @@ def verify_affiliate(conf_group, conf_aff):
         assert aff_res['schemas'][0] == conf.SCHEMA
         meta = aff_res['meta']
         assert meta['resourceType'] == 'affiliate'
-        assert meta['selfRef'] == url
+        # assert meta['selfRef'] == url
 
         data = aff_res['data']
         assert(data['name']) == conf_aff['name']
@@ -297,8 +329,16 @@ def verify_affiliate(conf_group, conf_aff):
     return 200
 
 
-def verify_history(conf_group, min_items=1):
-    url = conf.GWS_BASE + '/group/' + conf_group['id'] + '/history/'
+def _verify_history_item(events, expect):
+    for event in events:
+        if event['activity'] == expect['activity'] and event['description'].startswith(expect['description']):
+            return True
+    return False
+
+
+def verify_history(conf_group, min_items=1, altid=None, expect_list=None):
+    group_id = conf_group['id'] if altid is None else altid
+    url = conf.GWS_BASE + '/group/' + group_id + '/history/'
     print('GET: ' + url)
     _get_pool_manager()
     try:
@@ -312,11 +352,15 @@ def verify_history(conf_group, min_items=1):
         assert group['schemas'][0] == conf.SCHEMA
         meta = group['meta']
         assert meta['resourceType'] == 'history'
-        assert meta['selfRef'] == url
+        # assert meta['selfRef'] == url
 
         data = group['data']
 
         assert len(data) > min_items
+
+        if expect_list is not None:
+            for expect in expect_list:
+                assert _verify_history_item(data, expect)
 
     except json.decoder.JSONDecodeError:
         print('invalid json in get affiliate response')

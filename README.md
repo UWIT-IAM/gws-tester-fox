@@ -15,4 +15,8 @@ These are some Json representation tests I run during development of Groups 2.2.
 
 Note that some of the tests rely on ldap membership synchronizing.  That requires the ldap_provisioner running on the target service.
 
+## Style
+
+* Use: pycodestyle --max-line-length=150  *.py test
+
 

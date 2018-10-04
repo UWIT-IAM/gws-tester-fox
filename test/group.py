@@ -16,6 +16,9 @@ logger = logging.getLogger(__name__)
 
 class Group_Test():
 
+    def _name_parts(self, name):
+        return (name[0:name.rindex('_')], name[name.rindex('_')+1:])
+
     def test_00_init(self):
         resp = delete_group(conf.testgroup1)
         assert resp == 200 or resp == 404
@@ -30,7 +33,26 @@ class Group_Test():
         resp = verify_group(conf.testgroup1)
         assert resp == 200
 
+    # test move group - extension
+    def test_10_move_group(self):
+        s, e = self._name_parts(conf.testgroup1['id'])
+        resp = move_group(conf.testgroup1['id'], newext=e+'-next')
+        assert resp == 200
+
+    # test get group
+    def test_11_get_group(self):
+        resp = verify_group(conf.testgroup1, altid=conf.testgroup1['id']+'-next')
+        assert resp == 200
+
+    # test get history
+    def test_12_get_history(self):
+        expect = [
+          {'activity': 'group', 'description': 'rename'}
+        ]
+
+        verify_history(conf.testgroup1, altid=conf.testgroup1['id']+'-next', expect_list=expect)
+
     # test delete group
-    def test__03_delete_group(self):
-        resp = delete_group(conf.testgroup1)
+    def test_13_delete_group(self):
+        resp = delete_group(conf.testgroup1, altid=conf.testgroup1['id']+'-next')
         assert resp == 200
