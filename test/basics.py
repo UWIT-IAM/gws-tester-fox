@@ -29,12 +29,13 @@ def _basics_verify_error(ext, stat, res=None):
     data = _basics_verify_base(ext, stat, res)
     assert data['errors'][0]['status'] == stat
     assert len(data['errors'][0]['detail'][0]) > 0
+    print('stat=%d, detail=%s' % (stat, data['errors'][0]['detail'][0]))
 
 
 class Basics_Test():
 
     def test_00_base(self):
-        _basics_verify_base('', 200)
+        _basics_verify_base('/group/u_fox_00-spud99', 200)
 
     def test_01_group(self):
         _basics_verify_error('/group', 400, 'group')

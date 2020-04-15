@@ -36,6 +36,15 @@ def get_resource(resource):
         print(resp.data)
     return 599, None
 
+def delete_resource(resource, headers=None):
+    url = conf.GWS_BASE + resource
+    print (url)
+    ret = 0
+    _get_pool_manager()
+    resp = http.request('DELETE', url, headers=headers)
+    # print(resp.status)
+    return resp.status
+
 
 def build_group(conf_group):
 
@@ -51,21 +60,42 @@ def build_group(conf_group):
     resp = http.request('PUT', url, headers=put_headers, body=data)
 
     print(resp.status)
+    assert resp.status == 201
     # print(resp.data)
-    if resp.status != 201:
-        print('put of testgroup failed')
+    # verify we got a group back
+    rgroup = json.loads(resp.data.decode("utf-8"))
+
+    # meta stuff
+    assert rgroup['schemas'][0] == conf.SCHEMA
+    meta = rgroup['meta']
+    assert meta['resourceType'] == 'group'
+    # assert meta['selfRef'] == url
+    # assert meta['memberRef'] == url + '/member/'
+
+    data = rgroup['data']
+    assert len(data['regid']) == 32
+    assert data['id'] == group['id']
+
     return resp.status
 
 
-def _verify_admin(conf_group, data, type):
+def _verify_admin(conf_group, data, type, altid=None):
+    print('verify admin: ' + type)
     if type in conf_group:
         admins = data[type]
-        assert len(admins) == len(conf_group[type])
+        assert len(admins) == len(conf_group[type]) or conf_group[type][0]['id'] == 'none'
         # note the entries are not sorted
+        print(admins)
+        print(conf_group[type])
         for i in range(0, len(admins)):
             match = -1
             for j in range(0, len(conf_group[type])):
-                if admins[i]['type'] == conf_group[type][j]['type'] and admins[i]['id'] == conf_group[type][j]['id']:
+                # allow for self-ref group name change
+                conf_id = conf_group[type][j]['id']
+                if conf_id == conf_group['id'] and altid is not None:
+                    print('using %s for %s: ' % (altid, conf_id))
+                    conf_id = altid
+                if admins[i]['type'] == conf_group[type][j]['type'] and admins[i]['id'] == conf_id:
                     match = j
             assert match >= 0
     else:
@@ -99,7 +129,7 @@ def verify_group(conf_group, conf_aff=None, altid=None):
     try:
         resp = http.request('GET', url, headers=get_headers)
         print(resp.status)
-        # print(resp.data)
+        print(resp.data)
 
         group = json.loads(resp.data.decode("utf-8"))
 
@@ -126,7 +156,7 @@ def verify_group(conf_group, conf_aff=None, altid=None):
 
         _verify_admin(conf_group, data, 'admins')
         _verify_admin(conf_group, data, 'updaters')
-        _verify_admin(conf_group, data, 'creators')
+        _verify_admin(conf_group, data, 'creators', altid=altid)
         _verify_admin(conf_group, data, 'readers')
         _verify_admin(conf_group, data, 'optins')
         _verify_admin(conf_group, data, 'optouts')

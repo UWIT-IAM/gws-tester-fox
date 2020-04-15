@@ -44,11 +44,11 @@ class Member_Test():
 
     # test verify set members
     def test_04_verify_set_members(self):
-        # this one to cache
-        stat = verify_members(conf.testgroup2, conf.members2)
-        assert stat == 200
         # this one to registry
         stat = verify_members(conf.testgroup2, conf.members2, True)
+        assert stat == 200
+        # this one to cache
+        stat = verify_members(conf.testgroup2, conf.members2)
         assert stat == 200
 
     # test set membership with bogus member

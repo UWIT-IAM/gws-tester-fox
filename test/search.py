@@ -35,16 +35,22 @@ class Search_Test():
 
     # create first group
     def test_01_create_group(self):
+        stat = delete_group(conf.testgroup1)
+        assert stat == 200 or stat == 404
         stat = build_group(conf.testgroup1)
         assert stat == 200 or stat == 201 or stat == 412
 
     # create second group
     def test_02_create_group(self):
+        stat = delete_group(conf.testgroup2)
+        assert stat == 200 or stat == 404
         stat = build_group(conf.testgroup2)
         assert stat == 200 or stat == 201 or stat == 412
 
     # create third group
     def test_03_create_group(self):
+        stat = delete_group(conf.testgroup3)
+        assert stat == 200 or stat == 404
         stat = build_group(conf.testgroup3)
         assert stat == 200 or stat == 201 or stat == 412
 

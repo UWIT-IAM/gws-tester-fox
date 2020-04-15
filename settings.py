@@ -1,7 +1,13 @@
 # configuration for gws tester
 
-# HOST = 'iam-ws.u.washington.edu'
+#HOST = 'iam-ws.u.washington.edu'
+#HOST = 'groups.uw.edu'
+#HOST = 'eval.groups.uw.edu'
 HOST = 'dev.groups.uw.edu'
+#HOST = 'gws.sandbox.iam.s.uw.edu'
+
+
+
 CERT_FILE = '/home/fox/certs/gws.cac-uw.crt'
 KEY_FILE = '/home/fox/certs/gws.cac-uw.key'
 # CA_FILE = '/home/fox/certs/uwca.crt'
@@ -17,7 +23,7 @@ SCHEMA = 'urn:mace:washington.edu:schemas:groups:1.0'
 
 testgroup1 = {
   "id": "u_fox_jsontests_gwstest1",
-  "displayName": "Fox's json autotest 地球",
+  "displayName": "Fox's json autotest 地球 with a \\ in it's name.",
   "description": "This is a general purpose group for testing various Group Service functionality.",
   "contact": "fox",
   "authnfactor": "1",
@@ -37,6 +43,18 @@ testgroup1 = {
     {
       "type": "eppn",
       "id": "fox.1949@gmail.com"
+    }
+  ],
+  "creators": [
+    {
+      "type": "group",
+      "id": "u_fox_jsontests_gwstest1"
+    }
+  ],
+  "readers": [
+    {
+      "type": "set",
+      "id": "all"
     }
   ]
 }
@@ -71,6 +89,44 @@ testgroup3 = {
     {
       "type": "dns",
       "id": "gws.cac.washington.edu"
+    }
+  ]
+}
+
+testgroup4 = {
+  "id": "u_fox_jsontests_gwstest4",
+  "displayName": "Fox's json autotest group 4",
+  "description": "This is a general purpose group for testing various Group Service functionality.",
+  "contact": "fox",
+  "authnfactor": "1",
+  "classification": "u",
+  "admins": [
+    {
+      "type": "dns",
+      "id": "gws.cac.washington.edu"
+    },
+    {
+      "type": "uwnetid",
+      "id": "fox"
+    }
+  ]
+}
+
+testgroup5 = {
+  "id": "u_fox_jsontests_gwstest5",
+  "displayName": "Fox's json autotest group 5",
+  "description": "This is a general purpose group for testing various Group Service functionality.",
+  "contact": "fox",
+  "authnfactor": "1",
+  "classification": "u",
+  "admins": [
+    {
+      "type": "dns",
+      "id": "gws.cac.washington.edu"
+    },
+    {
+      "type": "uwnetid",
+      "id": "fox"
     }
   ]
 }
