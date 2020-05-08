@@ -4,6 +4,7 @@ from copy import deepcopy
 import json
 import time
 import urllib3
+import datetime
 import settings as conf
 
 put_headers = {"Content-type": "application/json", "If-Match": "*"}
@@ -23,12 +24,15 @@ def _get_pool_manager():
                                    cert_reqs='CERT_REQUIRED')
 
 
+# get a GWS resource and decode the json response
 def get_resource(resource):
     url = conf.GWS_BASE + resource
+    # print(url)
     ret = 0
     _get_pool_manager()
     try:
         resp = http.request('GET', url, headers=get_headers)
+        # print (resp)
         data = json.loads(resp.data.decode("utf-8"))
         return resp.status, data
     except json.decoder.JSONDecodeError:
@@ -36,6 +40,7 @@ def get_resource(resource):
         print(resp.data)
     return 599, None
 
+# delete a GWS resource
 def delete_resource(resource, headers=None):
     url = conf.GWS_BASE + resource
     print (url)
@@ -46,8 +51,8 @@ def delete_resource(resource, headers=None):
     return resp.status
 
 
+# create a GWS group
 def build_group(conf_group):
-
     group = deepcopy(conf_group)
     url = conf.GWS_BASE + '/group/' + group['id'] + '?synchronized'
     print('PUT: ' + url)
@@ -108,7 +113,7 @@ def _verify_admin(conf_group, data, type, altid=None):
 
 def group_status(conf_group):
     url = conf.GWS_BASE + '/group/' + conf_group['id']
-    print('GET: ' + url)
+    # print('GET: ' + url)
     ret = 0
     _get_pool_manager()
     try:
@@ -444,3 +449,21 @@ def search_groups(member=None, stem=None, name=None, scope=None, type=None):
         status = 599
 
     return (status, data)
+
+
+# find some course groups - by curric and number
+# difficult because courses are maintained for only a year.
+# we have to look for them.  return the first batch we find
+
+qtrs = ['WIN','SPR','SUM','AUT']
+
+def find_some_courses(curr, no):
+    year = datetime.datetime.now().year
+    while year > 2018 - 4:  # search back four years
+        for qtr in qtrs:
+            (st,grps) = search_groups(name='course_%d%s-%s%s*' % (year, qtr, curr, no))
+            print('%d%s: %d %d' % (year, qtr, st, len(grps)))
+            if st==200 and len(grps)>0:
+                return (year, qtr, grps)
+        year -= 1
+    return None

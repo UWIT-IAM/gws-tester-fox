@@ -84,6 +84,15 @@ class Search_Test():
         assert self._find_id(data, conf.GROUP_BASE)
         assert self._find_id(data, conf.testgroup1['id'])
         assert self._find_id(data, conf.testgroup2['id'])
+        assert self._find_id(data, conf.testgroup3['id'])
+
+    # test name search
+    def test_12_search(self):
+        (stat, data) = search_groups(name = '*' + conf.testgroup2['id'][6:] + '*')
+        assert stat == 200
+        print (data)
+        assert self._find_id(data, conf.testgroup2['id'])
+        assert self._find_id(data, conf.testgroup3['id'])
 
     # test member search
     def test_13_search(self):
@@ -100,6 +109,7 @@ class Search_Test():
         assert self._find_via(data, conf.testgroup1['id'], conf.testgroup2['id'])
         assert self._find_via(data, conf.testgroup1['id'], conf.testgroup3['id'])
 
+    
     # cleanup
     def test__99_cleanup(self):
         stat = delete_group(conf.testgroup3)
