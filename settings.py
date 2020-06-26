@@ -1,12 +1,8 @@
 # configuration for gws tester
 
-#HOST = 'iam-ws.u.washington.edu'
-#HOST = 'groups.uw.edu'
-#HOST = 'eval.groups.uw.edu'
+# HOST = 'groups.uw.edu'
 HOST = 'dev.groups.uw.edu'
-#HOST = 'gws.sandbox.iam.s.uw.edu'
-
-
+# HOST = 'eval.groups.uw.edu'
 
 CERT_FILE = '/home/fox/certs/gws.cac-uw.crt'
 KEY_FILE = '/home/fox/certs/gws.cac-uw.key'

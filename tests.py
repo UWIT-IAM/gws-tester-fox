@@ -1,4 +1,4 @@
-# unittests for the workday apis
+# tests for GWS api
 
 from test.basics import Basics_Test
 from test.group import Group_Test

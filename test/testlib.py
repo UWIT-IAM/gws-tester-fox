@@ -40,10 +40,11 @@ def get_resource(resource):
         print(resp.data)
     return 599, None
 
+
 # delete a GWS resource
 def delete_resource(resource, headers=None):
     url = conf.GWS_BASE + resource
-    print (url)
+    print(url)
     ret = 0
     _get_pool_manager()
     resp = http.request('DELETE', url, headers=headers)
@@ -450,20 +451,21 @@ def search_groups(member=None, stem=None, name=None, scope=None, type=None):
 
     return (status, data)
 
-
 # find some course groups - by curric and number
 # difficult because courses are maintained for only a year.
 # we have to look for them.  return the first batch we find
 
-qtrs = ['WIN','SPR','SUM','AUT']
+
+qtrs = ['WIN', 'SPR', 'SUM', 'AUT']
+
 
 def find_some_courses(curr, no):
     year = datetime.datetime.now().year
     while year > 2018 - 4:  # search back four years
         for qtr in qtrs:
-            (st,grps) = search_groups(name='course_%d%s-%s%s*' % (year, qtr, curr, no))
+            (st, grps) = search_groups(name='course_%d%s-%s%s*' % (year, qtr, curr, no))
             print('%d%s: %d %d' % (year, qtr, st, len(grps)))
-            if st==200 and len(grps)>0:
+            if st == 200 and len(grps) > 0:
                 return (year, qtr, grps)
         year -= 1
     return None
