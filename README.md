@@ -9,8 +9,12 @@ These are some Json representation tests I run during development of Groups 2.2.
 
 ## Testing
 
-* Make a virtual env and install what's in requirements.txt
-* ``$ nosetests .``
+* Make a virtual env and install what's in requirements.txt. The latest version of python I've been able to run these tests with is 3.8.2, as some newer version introduced some breaking changes.<br>
+`$ pyenv local 3.8.2`<br>
+`$ virtualenv -p 3.8.2 env`<br>
+`$ . ./env/bin/activate`<br>
+``$ pip install `cat requirements.txt` ``<br>
+`$ nosetests .`<br>
 * The tests should clean up after themselves.
 
 Note that some of the tests rely on ldap membership synchronizing.  That requires the ldap_provisioner running on the target service.
