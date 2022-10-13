@@ -1,9 +1,9 @@
-# Group Web Service 2.2 tester
-These are some Json representation tests I run during development of Groups 2.2.
+# Group Web Service tester
+These are some Json representation tests we can run when deploying/migrating.
 
 ## Settings and groups setup
 * Copy settings.tmpl to settings.py and edit that for your local configuration.
-* You must create the base group, as identified in your settings.py, and permit your certificate to be a subgroup creator.  Call it "u\_yourid_test".
+* You must create the base group, as identified in your settings.py, and permit your certificate to be a subgroup creator.  Call it "u\_<yournetid>_test".
 * You must identify your client and ca certs.
 * The membership tests use real ids.
 
