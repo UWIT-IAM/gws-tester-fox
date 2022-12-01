@@ -35,7 +35,7 @@ def _basics_verify_error(ext, stat, res=None):
 class Basics_Test():
 
     def test_00_base(self):
-        _basics_verify_base('/group/u_fox_00-spud99', 200)
+        _basics_verify_base('/group/' + conf.GROUP_BASE, 200)
 
     def test_01_group(self):
         _basics_verify_error('/group', 400, 'group')

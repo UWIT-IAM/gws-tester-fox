@@ -3,3 +3,4 @@ datetime
 six
 nose
 pycodestyle
+typing

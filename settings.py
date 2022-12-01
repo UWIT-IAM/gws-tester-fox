@@ -1,27 +1,26 @@
 # configuration for gws tester
 
-# HOST = 'groups.uw.edu'
-HOST = 'dev.groups.uw.edu'
+HOST = 'iam-ws.u.washington.edu'
+# HOST = 'dev.groups.uw.edu'
 # HOST = 'eval.groups.uw.edu'
 
-CERT_FILE = '/home/fox/certs/gws.cac-uw.crt'
-KEY_FILE = '/home/fox/certs/gws.cac-uw.key'
-# CA_FILE = '/home/fox/certs/uwca.crt'
-CA_FILE = '/home/fox/certs/cacerts.cert'
+CERT_FILE = '/Users/jimt/src/UW/IAM/certs/gws.cac-uw.crt'
+KEY_FILE = '/Users/jimt/src/UW/IAM/certs/gws.cac-uw.key'
+CA_FILE = '/Users/jimt/src/UW/IAM/certs/cacerts.cert'
 VERIFY_HOST = True
 
 GWS_BASE = 'https://' + HOST + '/group_sws/v3'
-GROUP_BASE = 'u_fox_jsontests'
+GROUP_BASE = 'u_jim7_testbase'
 
 SCHEMA = 'urn:mace:washington.edu:schemas:groups:1.0'
 
 # test group 1 definition
 
 testgroup1 = {
-  "id": "u_fox_jsontests_gwstest1",
-  "displayName": "Fox's json autotest 地球 with a \\ in it's name.",
+  "id": "u_jim7_testbase_gwstest1",
+  "displayName": "Jim's (née Fox's) json autotest with a \\ in it's name.",
   "description": "This is a general purpose group for testing various Group Service functionality.",
-  "contact": "fox",
+  "contact": "jim7",
   "authnfactor": "1",
   "classification": "u",
   "dependson": "uw_employee",
@@ -32,19 +31,19 @@ testgroup1 = {
     },
     {
       "type": "uwnetid",
-      "id": "fox"
+      "id": "jim7"
     }
   ],
   "updaters": [
     {
       "type": "eppn",
-      "id": "fox.1949@gmail.com"
+      "id": "jim.tomlinson@gmail.com"
     }
   ],
   "creators": [
     {
       "type": "group",
-      "id": "u_fox_jsontests_gwstest1"
+      "id": "u_jim7_testbase_gwstest1"
     }
   ],
   "readers": [
@@ -56,10 +55,10 @@ testgroup1 = {
 }
 
 testgroup2 = {
-  "id": "u_fox_jsontests_gwstest2",
-  "displayName": "Fox's json autotest group 2",
+  "id": "u_jim7_testbase_gwstest2",
+  "displayName": "Jim's (née Fox's) json autotest group 2",
   "description": "This is a general purpose group for testing various Group Service functionality.",
-  "contact": "fox",
+  "contact": "jim7",
   "authnfactor": "1",
   "classification": "u",
   "admins": [
@@ -69,16 +68,16 @@ testgroup2 = {
     },
     {
       "type": "uwnetid",
-      "id": "fox"
+      "id": "jim7"
     }
   ]
 }
 
 testgroup3 = {
-  "id": "u_fox_jsontests_gwstest2_group3",
-  "displayName": "Fox's json autotest group 3",
+  "id": "u_jim7_testbase_gwstest2_group3",
+  "displayName": "Jim's (née Fox's) json autotest group 3",
   "description": "This is a general purpose group for testing various Group Service functionality.",
-  "contact": "fox",
+  "contact": "jim7",
   "authnfactor": "1",
   "classification": "u",
   "admins": [
@@ -90,10 +89,10 @@ testgroup3 = {
 }
 
 testgroup4 = {
-  "id": "u_fox_jsontests_gwstest4",
-  "displayName": "Fox's json autotest group 4",
+  "id": "u_jim7_testbase_gwstest4",
+  "displayName": "Jim's (née Fox's) json autotest group 4",
   "description": "This is a general purpose group for testing various Group Service functionality.",
-  "contact": "fox",
+  "contact": "jim7",
   "authnfactor": "1",
   "classification": "u",
   "admins": [
@@ -103,16 +102,16 @@ testgroup4 = {
     },
     {
       "type": "uwnetid",
-      "id": "fox"
+      "id": "jim7"
     }
   ]
 }
 
 testgroup5 = {
-  "id": "u_fox_jsontests_gwstest5",
-  "displayName": "Fox's json autotest group 5",
+  "id": "u_jim7_testbase_gwstest5",
+  "displayName": "Jim's (née Fox's) json autotest group 5",
   "description": "This is a general purpose group for testing various Group Service functionality.",
-  "contact": "fox",
+  "contact": "jim7",
   "authnfactor": "1",
   "classification": "u",
   "admins": [
@@ -122,16 +121,16 @@ testgroup5 = {
     },
     {
       "type": "uwnetid",
-      "id": "fox"
+      "id": "jim7"
     }
   ]
 }
 
 
 members1 = [
- {"type": "uwnetid", "id": "fox"},
+ {"type": "uwnetid", "id": "jim7"},
  {"type": "dns", "id": "gws.cac.washington.edu"},
- {"type": "group", "id": "u_fox"}
+ {"type": "group", "id": "u_jim7"}
 ]
 
 members2 = [
