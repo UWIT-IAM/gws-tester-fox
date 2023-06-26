@@ -13,7 +13,7 @@ These are some Json representation tests we can run when deploying/migrating.
 `$ pyenv local 3.8.14`<br>
 `$ virtualenv -p 3.8.14 env`<br>
 `$ . ./env/bin/activate`<br>
-`$ pip install `cat requirements.txt` `<br>
+``$ pip install `cat requirements.txt` ``<br>
 `$ nosetests .`<br>
 ... or<br>
 `$ nosetests --with-timer .`<br>
