@@ -2,5 +2,6 @@ urllib3
 datetime
 six
 nose
+nose-timer
 pycodestyle
 typing
